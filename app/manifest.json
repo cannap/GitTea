@@ -36,5 +36,9 @@
       "run_at": "document_end",
       "all_frames": false
     }
+  ],
+  "permissions": [
+    "https://github.com/",
+    "https://gist.github.com/"
   ]
 }
