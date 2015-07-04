@@ -15,10 +15,6 @@
     ]
   },
   "page_action": {
-    "default_icon": {
-      "19": "images/icon-19.png",
-      "38": "images/icon-38.png"
-    },
     "default_title": "GitTea",
     "default_popup": "popup.html"
   },
@@ -26,8 +22,7 @@
   "content_scripts": [
     {
       "matches": [
-        "https://github.com/*",
-        "https://gist.github.com/*"
+        "https://github.com/*"
       ],
       "js": [
         "scripts/engine.js",
@@ -38,7 +33,6 @@
     }
   ],
   "permissions": [
-    "https://github.com/",
-    "https://gist.github.com/"
+    "https://github.com/"
   ]
 }
