@@ -18,31 +18,37 @@ Tea = {
     },
 
     init: function () {
-        var language = $('strong.final-path').text();
-        language = language.split('.')[1];
-        //Check if not Running or and it has no language then we can determine this is not a Singlefile
-        if (!language && !Tea.isObserving) {
-            Tea.detectDomChange();
+        var language,
+            finalPath;
+
+        finalPath = $('strong.final-path');
+
+        if (finalPath.length) {
+            language = finalPath.text();
+            language = language.split('.')[1];
+        } else {
+            if (!Tea.isObserving) {
+                Tea.detectDomChange();
+            }
         }
 
-        //Check if language is supported
         this.languages.forEach(function (lang) {
             if (language === lang) {
                 console.log(lang);
-                Tea.currentLang = lang;
-                return true;
+                return;
             }
         });
-    },
+    }
+    ,
+
 
     detectDomChange: function () {
-
         Tea.isObserving = true;
-
         var target = document.querySelector('#js-repo-pjax-container');
         var observer = new MutationObserver(function (mutation) {
             Tea.init();
         });
+
         var config = {
             attributes: false,
             childList: true,
@@ -50,7 +56,6 @@ Tea = {
         };
         observer.observe(target, config);
     }
-
 };
 
 
