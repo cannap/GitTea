@@ -11,38 +11,61 @@ Tea = {
     ],
 
     possibleCompiles: {
-        'js': 'coffee',
-        'coffee': 'js',
-        'html': 'jade',
-        'jade': 'html'
+        'js': 'Coffee',
+        'coffee': 'JS',
+        'html': 'Jade',
+        'jade': 'HTML'
     },
 
     init: function () {
         var language,
-            finalPath;
-
+            finalPath,
+            fileInfo;
+//Todo: this is not the rightway
         finalPath = $('strong.final-path');
+        fileInfo = $('.file-info');
 
-        if (finalPath.length) {
+        if (finalPath.length && fileInfo.length) {
             language = finalPath.text();
             language = language.split('.')[1];
         } else {
-            if (!Tea.isObserving) {
-                Tea.detectDomChange();
-            }
+            //We are on a file tree or something Start observing
+            Tea.detectDomChange();
         }
 
         this.languages.forEach(function (lang) {
             if (language === lang) {
                 console.log(lang);
+                Tea.addCompiler(lang);
+                //Start observing
+                Tea.detectDomChange();
+                //Return when we found something
                 return;
             }
         });
-    }
-    ,
+    },
+
+    addCompiler: function (compileFrom) {
+        //Hacky fix
+        var button = $('.compile');
+        if (button.length) {
+            return;
+        }
+
+        var action = '.file-actions .btn-group';
+        var buttonstyle = 'btn';
+        $(action).append('<a href="#" class="' + buttonstyle + ' btn-sm btn-primary compile">Compile to: ' + this.possibleCompiles[compileFrom] + '</a>');
+    },
 
 
     detectDomChange: function () {
+
+
+        if (Tea.isObserving) {
+            return;
+        }
+
+        console.log('Start observing');
         Tea.isObserving = true;
         var target = document.querySelector('#js-repo-pjax-container');
         var observer = new MutationObserver(function (mutation) {
