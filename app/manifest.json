@@ -26,6 +26,7 @@
       ],
       "js": [
         "scripts/engine.js",
+        "scripts/js2coffee.js",
         "scripts/contentscript.js"
       ],
       "run_at": "document_end",

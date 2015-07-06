@@ -2,12 +2,12 @@
 var Tea;
 Tea = {
     isObserving: false,
-
+    compileFrom: null,
     languages: [
         'js',
         'coffee',
-        'html',
-        'jade'
+       /* 'html',
+        'jade'*/
     ],
 
     possibleCompiles: {
@@ -21,7 +21,8 @@ Tea = {
         var language,
             finalPath,
             fileInfo;
-//Todo: this is not the rightway
+
+
         finalPath = $('strong.final-path');
         fileInfo = $('.file-info');
 
@@ -30,42 +31,67 @@ Tea = {
             language = language.split('.')[1];
         } else {
             //We are on a file tree or something Start observing
-            Tea.detectDomChange();
+            Tea._detectDomChange();
+
         }
 
-        this.languages.forEach(function (lang) {
+        Tea.languages.forEach(function (lang) {
             if (language === lang) {
-                console.log(lang);
-                Tea.addCompiler(lang);
+                Tea._addCompiler(lang);
                 //Start observing
-                Tea.detectDomChange();
+                Tea._detectDomChange();
                 //Return when we found something
-                return;
+                return false;
             }
         });
     },
 
-    addCompiler: function (compileFrom) {
-        //Hacky fix
-        var button = $('.compile');
-        if (button.length) {
-            return;
-        }
-
-        var action = '.file-actions .btn-group';
-        var buttonstyle = 'btn';
-        $(action).append('<a href="#" class="' + buttonstyle + ' btn-sm btn-primary compile">Compile to: ' + this.possibleCompiles[compileFrom] + '</a>');
+    _addCompiler: function (compileFrom) {
+        $('.file-actions .btn-group').append('<a href="#" class="btn btn-sm btn-primary compile">Compile to: ' + Tea.possibleCompiles[compileFrom] + '</a>');
+        Tea.compileFrom = Tea.possibleCompiles[compileFrom].toLowerCase();
+        console.log(Tea.compileFrom);
     },
 
+    compile: function (compileFrom) {
 
-    detectDomChange: function () {
 
+        var compileFrom = Tea.possibleCompiles[compileFrom].toLowerCase();
 
-        if (Tea.isObserving) {
-            return;
+        var sourceURL = $('#raw-url').attr('href');
+        var source;
+
+        $.get(sourceURL, function (data) {
+            source = data;
+
+        switch (compileFrom) {
+            case 'coffee':
+                console.log('Compile to JS');
+
+                break;
+            case 'js':
+                var result = js2coffee.build(source);
+                source = result.code;
+                break;
+            case 'html':
+                console.log('Compile to Jade');
+                break;
+            case 'jade':
+                console.log('Compile to HTML');
+                break;
+            default:
+                console.log('No Compiler found');
+                break;
+
         }
 
-        console.log('Start observing');
+            return source;
+        });
+    },
+    _detectDomChange: function () {
+        //Check Observing
+        if (Tea.isObserving) {
+            return false;
+        }
         Tea.isObserving = true;
         var target = document.querySelector('#js-repo-pjax-container');
         var observer = new MutationObserver(function (mutation) {
@@ -77,6 +103,7 @@ Tea = {
             childList: true,
             characterData: false
         };
+
         observer.observe(target, config);
     }
 };
@@ -85,4 +112,10 @@ Tea = {
 //Fire
 Tea.init();
 
+$(document.body).on('click', '.compile', function () {
+   var source = Tea.compile(Tea.compileFrom);
+
+    
+
+});
 
